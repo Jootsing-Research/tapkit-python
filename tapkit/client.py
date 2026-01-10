@@ -324,20 +324,41 @@ class TapKitClient:
             json={"x_delay": x_delay, "y_delay": y_delay},
         )
 
-    def double_tap(self, point, phone_id: str | None = None) -> Job:
-        """Double tap at a point."""
+    def double_tap(self, target, phone_id: str | None = None) -> Job:
+        """Double tap at a point or described element.
+
+        Args:
+            target: Either a point (unpacks to x, y) or a string selector.
+            phone_id: Phone ID (optional).
+        """
         pid = self._resolve_phone_id(phone_id)
-        x, y = point
+        if isinstance(target, str):
+            return self._action_request(
+                "POST", f"/phones/{pid}/double-tap/select", json={"selector": target}
+            )
+        x, y = target
         return self._action_request(
             "POST", f"/phones/{pid}/double-tap", json={"x": x, "y": y}
         )
 
     def tap_and_hold(
-        self, point, duration_ms: int = 1000, phone_id: str | None = None
+        self, target, duration_ms: int = 1000, phone_id: str | None = None
     ) -> Job:
-        """Tap and hold at a point."""
+        """Tap and hold at a point or described element.
+
+        Args:
+            target: Either a point (unpacks to x, y) or a string selector.
+            duration_ms: Hold duration in milliseconds.
+            phone_id: Phone ID (optional).
+        """
         pid = self._resolve_phone_id(phone_id)
-        x, y = point
+        if isinstance(target, str):
+            return self._action_request(
+                "POST",
+                f"/phones/{pid}/tap-and-hold/select",
+                json={"selector": target, "duration_ms": duration_ms},
+            )
+        x, y = target
         return self._action_request(
             "POST",
             f"/phones/{pid}/tap-and-hold",
@@ -346,13 +367,25 @@ class TapKitClient:
 
     def flick(
         self,
-        point,
+        target,
         direction: Literal["up", "down", "left", "right"],
         phone_id: str | None = None,
     ) -> Job:
-        """Flick gesture."""
+        """Flick gesture from a point or described element.
+
+        Args:
+            target: Either a point (unpacks to x, y) or a string selector.
+            direction: Flick direction.
+            phone_id: Phone ID (optional).
+        """
         pid = self._resolve_phone_id(phone_id)
-        x, y = point
+        if isinstance(target, str):
+            return self._action_request(
+                "POST",
+                f"/phones/{pid}/flick/select",
+                json={"selector": target, "direction": direction},
+            )
+        x, y = target
         return self._action_request(
             "POST",
             f"/phones/{pid}/flick",
@@ -375,11 +408,33 @@ class TapKitClient:
             json={"x": x, "y": y, "direction": direction, "duration_ms": duration_ms},
         )
 
-    def drag(self, from_point, to_point, phone_id: str | None = None) -> Job:
-        """Drag from one point to another."""
+    def drag(self, from_target, to_target, phone_id: str | None = None) -> Job:
+        """Drag from one point/element to another.
+
+        Args:
+            from_target: Either a point (unpacks to x, y) or a string selector.
+            to_target: Either a point (unpacks to x, y) or a string selector.
+            phone_id: Phone ID (optional).
+
+        Note:
+            When using selectors, both from_target and to_target must be strings.
+        """
         pid = self._resolve_phone_id(phone_id)
-        from_x, from_y = from_point
-        to_x, to_y = to_point
+        from_is_selector = isinstance(from_target, str)
+        to_is_selector = isinstance(to_target, str)
+
+        if from_is_selector or to_is_selector:
+            if not (from_is_selector and to_is_selector):
+                raise ValueError(
+                    "For drag with selectors, both from_target and to_target must be strings"
+                )
+            return self._action_request(
+                "POST",
+                f"/phones/{pid}/drag/select",
+                json={"from_selector": from_target, "to_selector": to_target},
+            )
+        from_x, from_y = from_target
+        to_x, to_y = to_target
         return self._action_request(
             "POST",
             f"/phones/{pid}/drag",
@@ -411,13 +466,25 @@ class TapKitClient:
 
     def pinch(
         self,
-        point,
+        target,
         action: Literal["pinch_in", "pinch_out", "rotate_cw", "rotate_ccw"],
         phone_id: str | None = None,
     ) -> Job:
-        """Pinch gesture."""
+        """Pinch gesture at a point or described element.
+
+        Args:
+            target: Either a point (unpacks to x, y) or a string selector.
+            action: Type of pinch action.
+            phone_id: Phone ID (optional).
+        """
         pid = self._resolve_phone_id(phone_id)
-        x, y = point
+        if isinstance(target, str):
+            return self._action_request(
+                "POST",
+                f"/phones/{pid}/pinch/select",
+                json={"selector": target, "action": action},
+            )
+        x, y = target
         return self._action_request(
             "POST",
             f"/phones/{pid}/pinch",
