@@ -90,39 +90,73 @@ class Phone:
                 "POST", f"/phones/{self.id}/tap", json={"x": x, "y": y}
             )
 
-    def double_tap(self, point) -> Job:
-        """Double tap at a point.
+    def double_tap(self, target) -> Job:
+        """Double tap at a point or described element.
 
         Args:
-            point: Anything that unpacks to (x, y).
+            target: Either:
+                - A point that unpacks to (x, y) - tuple, list, Point, bbox.center, etc.
+                - A string description of what to double tap (e.g., "the image thumbnail")
+
+        Examples:
+            phone.double_tap((100, 200))
+            phone.double_tap("the photo to zoom in")
         """
-        x, y = point
+        if isinstance(target, str):
+            return self._client._action_request(
+                "POST", f"/phones/{self.id}/double-tap/select", json={"selector": target}
+            )
+        x, y = target
         return self._client._action_request(
             "POST", f"/phones/{self.id}/double-tap", json={"x": x, "y": y}
         )
 
-    def tap_and_hold(self, point, duration_ms: int = 1000) -> Job:
-        """Tap and hold (long press) at a point.
+    def hold(self, target, duration_ms: int = 1000) -> Job:
+        """Hold (long press) at a point or described element.
 
         Args:
-            point: Anything that unpacks to (x, y).
+            target: Either:
+                - A point that unpacks to (x, y) - tuple, list, Point, bbox.center, etc.
+                - A string description of what to hold (e.g., "the app icon")
             duration_ms: Hold duration in milliseconds.
+
+        Examples:
+            phone.hold((100, 200), duration_ms=2000)
+            phone.hold("the app icon to delete")
         """
-        x, y = point
+        if isinstance(target, str):
+            return self._client._action_request(
+                "POST",
+                f"/phones/{self.id}/tap-and-hold/select",
+                json={"selector": target, "duration_ms": duration_ms},
+            )
+        x, y = target
         return self._client._action_request(
             "POST",
             f"/phones/{self.id}/tap-and-hold",
             json={"x": x, "y": y, "duration_ms": duration_ms},
         )
 
-    def flick(self, point, direction: Literal["up", "down", "left", "right"]) -> Job:
-        """Flick gesture (quick swipe).
+    def flick(self, target, direction: Literal["up", "down", "left", "right"]) -> Job:
+        """Flick gesture (quick swipe) from a point or described element.
 
         Args:
-            point: Anything that unpacks to (x, y).
+            target: Either:
+                - A point that unpacks to (x, y) - tuple, list, Point, bbox.center, etc.
+                - A string description of where to flick from (e.g., "the scrollable list")
             direction: Flick direction.
+
+        Examples:
+            phone.flick((100, 200), "up")
+            phone.flick("the message list", "down")
         """
-        x, y = point
+        if isinstance(target, str):
+            return self._client._action_request(
+                "POST",
+                f"/phones/{self.id}/flick/select",
+                json={"selector": target, "direction": direction},
+            )
+        x, y = target
         return self._client._action_request(
             "POST",
             f"/phones/{self.id}/flick",
@@ -149,19 +183,40 @@ class Phone:
             json={"x": x, "y": y, "direction": direction, "duration_ms": duration_ms},
         )
 
-    def drag(self, from_point, to_point) -> Job:
-        """Drag from one point to another.
+    def drag(self, from_target, to_target) -> Job:
+        """Drag from one point/element to another.
 
         Args:
-            from_point: Starting point (unpacks to x, y).
-            to_point: Ending point (unpacks to x, y).
+            from_target: Either:
+                - A point that unpacks to (x, y)
+                - A string description of where to drag from
+            to_target: Either:
+                - A point that unpacks to (x, y)
+                - A string description of where to drag to
+
+        Note:
+            When using selectors, both from_target and to_target must be strings.
+            Mixed coordinate/selector usage is not supported.
 
         Examples:
             phone.drag((100, 200), (300, 400))
-            phone.drag(start_point, end_point)
+            phone.drag("the slider handle", "the right end of the slider")
         """
-        from_x, from_y = from_point
-        to_x, to_y = to_point
+        from_is_selector = isinstance(from_target, str)
+        to_is_selector = isinstance(to_target, str)
+
+        if from_is_selector or to_is_selector:
+            if not (from_is_selector and to_is_selector):
+                raise ValueError(
+                    "For drag with selectors, both from_target and to_target must be strings"
+                )
+            return self._client._action_request(
+                "POST",
+                f"/phones/{self.id}/drag/select",
+                json={"from_selector": from_target, "to_selector": to_target},
+            )
+        from_x, from_y = from_target
+        to_x, to_y = to_target
         return self._client._action_request(
             "POST",
             f"/phones/{self.id}/drag",
@@ -193,15 +248,27 @@ class Phone:
         )
 
     def pinch(
-        self, point, action: Literal["pinch_in", "pinch_out", "rotate_cw", "rotate_ccw"]
+        self, target, action: Literal["pinch_in", "pinch_out", "rotate_cw", "rotate_ccw"]
     ) -> Job:
-        """Pinch/zoom/rotate gesture.
+        """Pinch/zoom/rotate gesture at a point or described element.
 
         Args:
-            point: Center point for the gesture (unpacks to x, y).
+            target: Either:
+                - A point that unpacks to (x, y) - tuple, list, Point, bbox.center, etc.
+                - A string description of where to pinch (e.g., "the image")
             action: Type of pinch action.
+
+        Examples:
+            phone.pinch((100, 200), "pinch_out")
+            phone.pinch("the map", "pinch_in")
         """
-        x, y = point
+        if isinstance(target, str):
+            return self._client._action_request(
+                "POST",
+                f"/phones/{self.id}/pinch/select",
+                json={"selector": target, "action": action},
+            )
+        x, y = target
         return self._client._action_request(
             "POST",
             f"/phones/{self.id}/pinch",
