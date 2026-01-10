@@ -111,18 +111,18 @@ class Phone:
             "POST", f"/phones/{self.id}/double-tap", json={"x": x, "y": y}
         )
 
-    def tap_and_hold(self, target, duration_ms: int = 1000) -> Job:
-        """Tap and hold (long press) at a point or described element.
+    def hold(self, target, duration_ms: int = 1000) -> Job:
+        """Hold (long press) at a point or described element.
 
         Args:
             target: Either:
                 - A point that unpacks to (x, y) - tuple, list, Point, bbox.center, etc.
-                - A string description of what to tap and hold (e.g., "the app icon")
+                - A string description of what to hold (e.g., "the app icon")
             duration_ms: Hold duration in milliseconds.
 
         Examples:
-            phone.tap_and_hold((100, 200), duration_ms=2000)
-            phone.tap_and_hold("the app icon to delete")
+            phone.hold((100, 200), duration_ms=2000)
+            phone.hold("the app icon to delete")
         """
         if isinstance(target, str):
             return self._client._action_request(

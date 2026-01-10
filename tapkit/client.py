@@ -341,10 +341,10 @@ class TapKitClient:
             "POST", f"/phones/{pid}/double-tap", json={"x": x, "y": y}
         )
 
-    def tap_and_hold(
+    def hold(
         self, target, duration_ms: int = 1000, phone_id: str | None = None
     ) -> Job:
-        """Tap and hold at a point or described element.
+        """Hold (long press) at a point or described element.
 
         Args:
             target: Either a point (unpacks to x, y) or a string selector.
