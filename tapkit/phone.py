@@ -283,12 +283,14 @@ class Phone:
             "POST", f"/phones/{self.id}/open-app", json={"app_name": app_name}
         )
 
-    def type_text(self, text: str, method: Literal["keys", "paste"] = "keys") -> Job:
+    def type_text(self, text: str, method: Literal["keys", "shortcut"] = "keys") -> Job:
         """Type text.
 
         Args:
             text: Text to type.
-            method: Input method - "keys" for keystroke simulation, "paste" for clipboard.
+            method: Input method:
+                - "keys": Keystroke simulation via keyboard extension
+                - "shortcut": iOS Shortcut copies text to clipboard, then vision-guided paste
         """
         return self._client._action_request(
             "POST", f"/phones/{self.id}/type", json={"text": text, "method": method}
