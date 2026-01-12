@@ -90,6 +90,19 @@ class Phone:
                 "POST", f"/phones/{self.id}/tap", json={"x": x, "y": y}
             )
 
+    def tap_with_delays(self, x_delay: float, y_delay: float) -> Job:
+        """Tap using raw scan delay times instead of coordinates.
+
+        Args:
+            x_delay: X-axis scan delay time.
+            y_delay: Y-axis scan delay time.
+        """
+        return self._client._action_request(
+            "POST",
+            f"/phones/{self.id}/tap-with-delays",
+            json={"x_delay": x_delay, "y_delay": y_delay},
+        )
+
     def double_tap(self, target) -> Job:
         """Double tap at a point or described element.
 
