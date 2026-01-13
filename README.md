@@ -218,7 +218,7 @@ image_provider = TapKitAsyncImageProvider(phone)
 | Environment Variable | Description | Default |
 |---------------------|-------------|---------|
 | `TAPKIT_API_KEY` | API key for authentication | Required |
-| `TAPKIT_BASE_URL` | Base URL for API | `https://api.tapkit.ai` |
+| `TAPKIT_BASE_URL` | Base URL for API | `https://api.tapkit.ai/v1` |
 
 ## Documentation
 

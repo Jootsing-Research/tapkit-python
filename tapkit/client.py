@@ -47,14 +47,14 @@ class TapKitClient:
         Args:
             api_key: API key for authentication. Defaults to TAPKIT_API_KEY env var.
             base_url: Base URL of the TapKit server. Defaults to TAPKIT_BASE_URL env var,
-                      or https://api.tapkit.ai if not set.
+                      or https://api.tapkit.ai/v1 if not set.
             timeout: Request timeout in seconds.
         """
         self.api_key = api_key or os.environ.get("TAPKIT_API_KEY")
         if not self.api_key:
             raise ValueError("API key required. Set TAPKIT_API_KEY or pass api_key.")
 
-        self.base_url = (base_url or os.environ.get("TAPKIT_BASE_URL") or "https://api.tapkit.ai").rstrip("/")
+        self.base_url = (base_url or os.environ.get("TAPKIT_BASE_URL") or "https://api.tapkit.ai/v1").rstrip("/")
         self._client = httpx.Client(
             base_url=self.base_url,
             headers={"X-API-Key": self.api_key},
