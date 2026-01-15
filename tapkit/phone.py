@@ -376,20 +376,14 @@ class Phone:
             "POST", f"/phones/{self.id}/type", json={"text": text, "method": method}
         )
 
-    def run_shortcut(self, index: int | None = None, name: str | None = None) -> Job:
+    def run_shortcut(self, index: int) -> Job:
         """Run an iOS Shortcut.
 
         Args:
-            index: Shortcut index (0-based).
-            name: Shortcut name.
+            index: Shortcut index (1-based, since 0 is 'back' in the menu).
         """
-        json_data = {}
-        if index is not None:
-            json_data["index"] = index
-        if name is not None:
-            json_data["name"] = name
         return self._client._action_request(
-            "POST", f"/phones/{self.id}/shortcut", json=json_data
+            "POST", f"/phones/{self.id}/shortcut", json={"index": index}
         )
 
     # === Screenshots ===

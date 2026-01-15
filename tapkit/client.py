@@ -580,18 +580,12 @@ class TapKitClient:
 
     def run_shortcut(
         self,
-        index: int | None = None,
-        name: str | None = None,
+        index: int,
         phone_id: str | None = None,
     ) -> Job:
-        """Run a shortcut by index or name."""
+        """Run a shortcut by index."""
         pid = self._resolve_phone_id(phone_id)
-        json_data = {}
-        if index is not None:
-            json_data["index"] = index
-        if name is not None:
-            json_data["name"] = name
-        return self._action_request("POST", f"/phones/{pid}/shortcut", json=json_data)
+        return self._action_request("POST", f"/phones/{pid}/shortcut", json={"index": index})
 
     # === Mac Control ===
 
