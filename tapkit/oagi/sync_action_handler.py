@@ -77,10 +77,10 @@ class TapKitActionHandler:
             case ActionType.RIGHT_SINGLE:
                 # Phones's don't have right clicks but I'm assuming the equivilant is a hold
                 point = self._parse_coords(arg)
-                self._phone.tap_and_hold(point.as_tuple(), duration_ms=2000)
+                self._phone.hold(point.as_tuple(), duration_ms=2000)
             case ActionType.DRAG:
                 start, end = self._parse_drag_coords(arg)
-                self._phone.drag(from_point=start.as_tuple(), to_point=end.as_tuple())
+                self._phone.drag(start.as_tuple(), end.as_tuple())
             case ActionType.HOTKEY:
                 # Hotkeys aren't a thing for us, we need to capture all of the possible hotkeys and figure out what their mappings are
                 pass
@@ -94,7 +94,7 @@ class TapKitActionHandler:
                     direction = 'up'
                 elif direction == 'up':
                     direction = 'down'
-                self._phone.flick(point=point.as_tuple(), direction=direction)
+                self._phone.flick(point.as_tuple(), direction)
 
             case ActionType.FINISH:
                 self.reset()
