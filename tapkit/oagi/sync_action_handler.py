@@ -86,7 +86,7 @@ class TapKitActionHandler:
                 pass
             case ActionType.TYPE:
                 text = arg.strip("\"'")
-                self._phone.type_text(text=text, method='keys')
+                self._phone.type_text(text=text, method='shortcut')
             case ActionType.SCROLL:
                 # TODO We should probably have multiple ways to scroll and make that configurable idk
                 point, direction = self._parse_scroll(arg)
@@ -101,7 +101,6 @@ class TapKitActionHandler:
 
             case ActionType.WAIT:
                 # Wait for a short period
-                # TODO introduce the wait timer
                 time.sleep(3.0)
             case ActionType.CALL_USER:
                 # TODO - integrate with out own kind of user human in the loop ideas

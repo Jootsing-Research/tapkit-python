@@ -144,9 +144,6 @@ phone.action_button()
 ### App Control
 
 ```python
-# Open an app
-phone.open_app("Safari")
-
 # Type text
 phone.type_text("Hello, world!")
 phone.type_text("pasted text", method="paste")  # Use clipboard
