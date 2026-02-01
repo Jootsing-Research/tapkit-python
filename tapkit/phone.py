@@ -353,16 +353,6 @@ class Phone:
             "POST", f"/phones/{self.id}/unlock", json=json_data
         )
 
-    def open_app(self, app_name: str) -> Job:
-        """Open an app by name.
-
-        Args:
-            app_name: Name of the app to open.
-        """
-        return self._client._action_request(
-            "POST", f"/phones/{self.id}/open-app", json={"app_name": app_name}
-        )
-
     def type_text(self, text: str, method: Literal["keys", "shortcut"] = "keys") -> Job:
         """Type text.
 

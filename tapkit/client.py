@@ -559,13 +559,6 @@ class TapKitClient:
             json_data["passcode"] = passcode
         return self._action_request("POST", f"/phones/{pid}/unlock", json=json_data)
 
-    def open_app(self, app_name: str, phone_id: str | None = None) -> Job:
-        """Open an app by name."""
-        pid = self._resolve_phone_id(phone_id)
-        return self._action_request(
-            "POST", f"/phones/{pid}/open-app", json={"app_name": app_name}
-        )
-
     def type_text(
         self,
         text: str,
