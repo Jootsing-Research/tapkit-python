@@ -290,6 +290,26 @@ class Phone:
 
     # === Device Actions ===
 
+    def open_app(self, app_name: str) -> Job:
+        """Open an app by name.
+
+        Uses Spotlight search to find and launch the app.
+
+        Args:
+            app_name: Name of the app to open (e.g., "Settings", "Safari").
+
+        Examples:
+            phone.open_app("Settings")
+            phone.open_app("Safari")
+        """
+        return self._client._action_request(
+            "POST", f"/phones/{self.id}/open-app", json={"app_name": app_name}
+        )
+
+    def escape(self) -> Job:
+        """Press escape / go back."""
+        return self._client._action_request("POST", f"/phones/{self.id}/escape")
+
     def home(self) -> Job:
         """Press home button / go to home screen."""
         return self._client._action_request("POST", f"/phones/{self.id}/home")

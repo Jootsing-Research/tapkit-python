@@ -60,7 +60,7 @@ class TapKitClient:
             headers={"X-API-Key": self.api_key},
             timeout=timeout,
         )
-        self._default_phone_id: str | None = None
+        self._default_phone_id: str | None = os.environ.get("TAPKIT_PHONE_ID")
         self._phones_cache: list[Phone] | None = None
 
     def close(self):
@@ -140,22 +140,30 @@ class TapKitClient:
         self._phones_cache = phones
         return phones
 
-    def phone(self, name_or_id: str) -> Phone:
+    def phone(self, name_or_id: str | None = None) -> Phone:
         """Get a phone by name or ID.
 
         Args:
             name_or_id: Phone name (e.g., "iPhone 15") or UUID.
+                        If omitted, falls back to TAPKIT_PHONE_ID env var.
 
         Returns:
             Phone object.
 
         Raises:
-            TapKitError: If phone not found.
+            TapKitError: If phone not found or no identifier provided.
 
         Examples:
             phone = client.phone("iPhone 15")
             phone = client.phone("uuid-here")
+            phone = client.phone()  # Uses TAPKIT_PHONE_ID env var
         """
+        if name_or_id is None:
+            name_or_id = os.environ.get("TAPKIT_PHONE_ID")
+            if not name_or_id:
+                raise TapKitError(
+                    "No phone specified. Pass a name/ID or set TAPKIT_PHONE_ID."
+                )
         phones = self.list_phones()
         for p in phones:
             if p.id == name_or_id or p.name == name_or_id:
@@ -492,6 +500,25 @@ class TapKitClient:
         )
 
     # === Device Actions ===
+
+    def open_app(self, app_name: str, phone_id: str | None = None) -> Job:
+        """Open an app by name.
+
+        Uses Spotlight search to find and launch the app.
+
+        Args:
+            app_name: Name of the app to open (e.g., "Settings", "Safari").
+            phone_id: Phone ID (optional).
+        """
+        pid = self._resolve_phone_id(phone_id)
+        return self._action_request(
+            "POST", f"/phones/{pid}/open-app", json={"app_name": app_name}
+        )
+
+    def escape(self, phone_id: str | None = None) -> Job:
+        """Press escape / go back."""
+        pid = self._resolve_phone_id(phone_id)
+        return self._action_request("POST", f"/phones/{pid}/escape")
 
     def home(self, phone_id: str | None = None) -> Job:
         """Press home button."""
