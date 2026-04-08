@@ -396,6 +396,22 @@ class Phone:
             "POST", f"/phones/{self.id}/shortcut", json={"index": index}
         )
 
+    def copy_text(self, text: str) -> Job:
+        """Copy text to the phone's clipboard.
+
+        After this completes, the text is on the phone's clipboard
+        and can be pasted anywhere.
+
+        Args:
+            text: The text to copy to the clipboard.
+
+        Examples:
+            phone.copy_text("Hello, world!")
+        """
+        return self._client._action_request(
+            "POST", f"/phones/{self.id}/copy-text", json={"text": text}
+        )
+
     # === Screenshots ===
 
     def screenshot(self) -> bytes:
