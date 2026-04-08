@@ -607,6 +607,25 @@ class TapKitClient:
         pid = self._resolve_phone_id(phone_id)
         return self._action_request("POST", f"/phones/{pid}/shortcut", json={"index": index})
 
+    def copy_text(
+        self,
+        text: str,
+        phone_id: str | None = None,
+    ) -> Job:
+        """Copy text to the phone's clipboard.
+
+        After this completes, the text is on the phone's clipboard
+        and can be pasted anywhere.
+
+        Args:
+            text: The text to copy to the clipboard.
+            phone_id: Phone ID (optional).
+        """
+        pid = self._resolve_phone_id(phone_id)
+        return self._action_request(
+            "POST", f"/phones/{pid}/copy-text", json={"text": text}
+        )
+
     # === Mac Control ===
 
     def enable_switch_control(self, mac_id: str) -> Job:
